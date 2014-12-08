@@ -1,5 +1,5 @@
 float FAR_CLIP = 1000;
-float PATTERN_SIZE = 100;
+float PATTERN_SIZE = 101;
 
 // 描画が終わったパターンの数をかぞえるよ
 int seigaihaPatternCounter;
@@ -7,7 +7,7 @@ int seigaihaPatternCounter;
 class Seigaiha {
   ArrayList<Row> rows;
   private long counter;
-  private boolean finished;
+  // private boolean finished;
   Seigaiha() {
     rows = new ArrayList<Row>();
     counter = 0;
@@ -16,6 +16,10 @@ class Seigaiha {
   
   long getNumPatterns() {
     return (long)(height / (0.25 * PATTERN_SIZE) + 1) * rows.get(0).getNumPatterns();
+  }
+  
+  boolean finished() {
+    return seigaihaPatternCounter > getNumPatterns();
   }
   
   Seigaiha update() {
@@ -99,7 +103,9 @@ class Pattern {
   
   Pattern update() {
     float angle = min(SPEED * radians(counter), PI);
-    fill(0x00);
+
+    noFill();
+    fill(0);
     stroke(0xFF00CCFF);
     for(float r = PATTERN_SIZE; !(r < 0); r -= 15) {
       if(angle < PI) {

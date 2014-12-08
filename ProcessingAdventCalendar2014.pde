@@ -10,7 +10,7 @@ void setup() {
   setupTypeWriter();
   
   img = loadImage("paper_bg2.png");  
-  state = new OrigamiEffect();
+  state = new SensuEffect();
 }
 
 void draw() {

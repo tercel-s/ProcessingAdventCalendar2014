@@ -26,6 +26,13 @@ class OrigamiEffect implements State {
     float angle = 0.5 * radians(++_counter);
     
     camera();
+    
+    pushMatrix();
+    fill(0);
+    seigaiha = seigaiha.update();
+    fill(0xFF);
+    popMatrix();
+    
     pushMatrix();
   
     translate(width/2, height/2, _numFolds < MAX_FOLDS-1 ? 0 : -pow(++_zOffset, 2));
@@ -44,9 +51,10 @@ class OrigamiEffect implements State {
     
     origami = tmp;
     popMatrix();
-    seigaiha = seigaiha.update();
     
-    return _numFolds < MAX_FOLDS ? this : new SensuEffect(seigaiha);
+
+
+    return _numFolds < MAX_FOLDS ? this : new SensuEffect();
   }
 }
 

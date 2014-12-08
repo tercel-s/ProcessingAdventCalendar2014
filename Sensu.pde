@@ -2,16 +2,21 @@ class SensuEffect implements State {
   private State[] sensuArray;
   private int counter;
   private Seigaiha seigaiha;
-  SensuEffect(Seigaiha seigaiha) {
+  private PImage backgroundImg;
+  SensuEffect() {
     sensuArray = new Sensu[4];
     counter = 0;
     this.seigaiha = seigaiha;
     
     // lines.clear();
     lines.add("Sensu Effect");
+    seigaiha = new Seigaiha();
+    
+    backgroundImg = loadImage("seigaiha.png");
   }
     
-  State update() {    
+  State update() {   
+    if(backgroundImg.get(0, 0) == 0) return;
     
     // background((20 * counter) < 0xFF ? 0xFF - (20 * counter) : 0);
     
@@ -20,9 +25,12 @@ class SensuEffect implements State {
     
     pushMatrix();
     if(counter++ % 100 == 0) {
-      int index = (int)(counter / 100) % 4;
-      int rSeed = index % 2 == 0 ? (int)(random(100)) * 2 : (int)(random(100)) * 2 + 1;
-      sensuArray[index] = new Sensu(rSeed);
+      int index = (int)(counter / 100);
+      // ちょっと扇子が無限に湧き出るのはアレなので、2こまでにする
+      if(index < 2) {
+        int rSeed = index % 2 == 0 ? (int)(random(100)) * 2 : (int)(random(100)) * 2 + 1;
+        sensuArray[index] = new Sensu(rSeed);
+      }
     }
     
     for(int i = 0; i < sensuArray.length; ++i) {
@@ -33,7 +41,8 @@ class SensuEffect implements State {
     popMatrix();
     
     seigaiha = seigaiha.update();
-    return this;
+    
+    return seigaiha.finished() ? new Mosaic2(backgroundImg, img, 0) : this;
   }
 }
 
@@ -49,7 +58,7 @@ class Sensu implements State {
   int counter, subCounter;
   int rSeed;
   Sensu(int seed) {
-    textureImage = loadImage("paper_bg2.png");
+    textureImage = loadImage("hau.png");
     counter = 0;
     subCounter = 0;
     
@@ -58,6 +67,7 @@ class Sensu implements State {
   }
   
   State update() {
+
     randomSeed(rSeed);
     if(textureImage.get(0,0) == 0) return this;
     
@@ -87,6 +97,8 @@ class Sensu implements State {
       rotateZ(angle);
       translate(0, -LEN);
   
+      stroke(0);
+      noStroke();
       beginShape(QUAD_STRIP);
       texture(textureImage);
       for(float coef : new float[] {0 , 1 }) {
