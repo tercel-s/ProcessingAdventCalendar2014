@@ -9,8 +9,8 @@ void setup() {
   typeWriter = new Typer();
   setupTypeWriter();
   
-  img = loadImage("paper_bg2.png");  
-  state = new SensuEffect();
+  img = loadImage("bg.png");  
+  state = new Boid();
 }
 
 void draw() {

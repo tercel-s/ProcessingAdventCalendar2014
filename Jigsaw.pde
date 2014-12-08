@@ -11,13 +11,15 @@ abstract class Transition {
   protected PImage next;
   protected long   counter;
   protected int    direction;
+  protected State  nextState;
   protected Transition() {}
   
-  Transition(PImage img1, PImage img2, int dir) {    
+  Transition(PImage img1, PImage img2, int dir, State nextState) {    
     prev      = img1;
     next      = img2;
     direction = dir;
     counter   = 0;
+    this.nextState = nextState;
   }
 
 }
@@ -25,8 +27,8 @@ abstract class Transition {
 int g_Direction;
 class Mosaic extends Transition implements State {
   final float SPEED = 0.05;
-  Mosaic(PImage img1, PImage img2, int direction) {
-    super(img1, img2, direction);
+  Mosaic(PImage img1, PImage img2, int direction, State nextState) {
+    super(img1, img2, direction, nextState);
   }
   
   State update() {
@@ -44,9 +46,7 @@ class Mosaic extends Transition implements State {
     drawDividedImage(this.prev, 20, 20);
     popMatrix();
 
-    return ++counter < 60 ? this : 
-      ++g_Direction % 4 != 0 ?
-        new Mosaic(next, prev, g_Direction % 4) : new Mosaic2(next, prev, g_Direction % 4);
+    return ++counter < 40 ? this : nextState;
   }
 }
 
@@ -54,8 +54,8 @@ class Mosaic2 extends Transition implements State {
   final float SPEED = 0.5;
   final float ROTATE_SPEED = 0.025;
   long zoomCounter;
-  Mosaic2(PImage img1, PImage img2, int direction) {
-    super(img1, img2, direction);
+  Mosaic2(PImage img1, PImage img2, int direction, State nextState) {
+    super(img1, img2, direction, nextState);
     zoomCounter = 1;
   }
   
@@ -86,9 +86,8 @@ class Mosaic2 extends Transition implements State {
     
     popMatrix();
 
-    return angle < HALF_PI ? this : 
-      ++g_Direction % 4 != 0 ?
-        new Mosaic2(next, prev, g_Direction % 4) : new Mosaic(next, prev, g_Direction % 4);
+    
+    return angle < HALF_PI ? this : nextState;
     
   }
 }

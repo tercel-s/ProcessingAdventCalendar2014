@@ -36,7 +36,7 @@ class Seigaiha {
       rows.add(new Row(height + 0.25 * PATTERN_SIZE));
     }
     
-    if((++counter % (int)(5 * rows.get(0).getNumPatterns())) == 0) {
+    if((++counter % (int)(4 * rows.get(0).getNumPatterns())) == 0) {
       if(rows.size() < height / (0.25 * PATTERN_SIZE) + 1) {
         rows.add(new Row(height + (1 - rows.size()) * 0.25 * PATTERN_SIZE));
       } 
@@ -73,7 +73,7 @@ class Row {
   }
   
   Row update() {
-    if(counter++ % 7 == 0) {
+    if(counter++ % 4 == 0) {
       if (patterns.size() < getNumPatterns()) {
         patterns.add(new Pattern(patterns.size() * PATTERN_SIZE, y));
       }

@@ -3,16 +3,15 @@ class SensuEffect implements State {
   private int counter;
   private Seigaiha seigaiha;
   private PImage backgroundImg;
+  private PImage yagasuriImg;
   SensuEffect() {
     sensuArray = new Sensu[4];
     counter = 0;
     this.seigaiha = seigaiha;
     
-    // lines.clear();
-    lines.add("Sensu Effect");
-    seigaiha = new Seigaiha();
-    
+    seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
+    yagasuriImg   = loadImage("yagasuri.png");
   }
     
   State update() {   
@@ -42,7 +41,7 @@ class SensuEffect implements State {
     
     seigaiha = seigaiha.update();
     
-    return seigaiha.finished() ? new Mosaic2(backgroundImg, img, 0) : this;
+    return seigaiha.finished() ? new Mosaic2(backgroundImg, yagasuriImg, 3, new Boid()) : this;
   }
 }
 

@@ -5,7 +5,7 @@ class LogoDisplay implements State {
   private float  cameraAngle;
 
   private int _counter;
-  
+  private PImage blackImg;
   public LogoDisplay() {
     _counter = 0;
     
@@ -18,9 +18,14 @@ class LogoDisplay implements State {
       }
     }
     cameraAngle = 100;
+    
+    blackImg = loadImage("black.png");
   }
   
   State update() {
+    
+    if(blackImg.get(0,0) == 0) return;
+    
     final float FRAGMENT_WIDTH  = (float)width  / N;
     final float FRAGMENT_HEIGHT = (float)height / N;
     
@@ -81,6 +86,6 @@ class LogoDisplay implements State {
 
     if (_counter < 100 + 2 * N) return this;
     
-    return new OrigamiEffect();
+    return new Mosaic2(img, blackImg, 2, new SensuEffect());
   }
 }

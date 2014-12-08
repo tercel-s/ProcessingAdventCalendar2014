@@ -9,8 +9,8 @@ void setup() {
   typeWriter = new Typer();
   setupTypeWriter();
   
-  img = loadImage("paper_bg2.png");  
-  state = new SensuEffect();
+  img = loadImage("bg.png");  
+  state = new Boid();
 }
 
 void draw() {
@@ -386,13 +386,15 @@ abstract class Transition {
   protected PImage next;
   protected long   counter;
   protected int    direction;
+  protected State  nextState;
   protected Transition() {}
   
-  Transition(PImage img1, PImage img2, int dir) {    
+  Transition(PImage img1, PImage img2, int dir, State nextState) {    
     prev      = img1;
     next      = img2;
     direction = dir;
     counter   = 0;
+    this.nextState = nextState;
   }
 
 }
@@ -400,8 +402,8 @@ abstract class Transition {
 int g_Direction;
 class Mosaic extends Transition implements State {
   final float SPEED = 0.05;
-  Mosaic(PImage img1, PImage img2, int direction) {
-    super(img1, img2, direction);
+  Mosaic(PImage img1, PImage img2, int direction, State nextState) {
+    super(img1, img2, direction, nextState);
   }
   
   State update() {
@@ -419,9 +421,7 @@ class Mosaic extends Transition implements State {
     drawDividedImage(this.prev, 20, 20);
     popMatrix();
 
-    return ++counter < 60 ? this : 
-      ++g_Direction % 4 != 0 ?
-        new Mosaic(next, prev, g_Direction % 4) : new Mosaic2(next, prev, g_Direction % 4);
+    return ++counter < 40 ? this : nextState;
   }
 }
 
@@ -429,8 +429,8 @@ class Mosaic2 extends Transition implements State {
   final float SPEED = 0.5;
   final float ROTATE_SPEED = 0.025;
   long zoomCounter;
-  Mosaic2(PImage img1, PImage img2, int direction) {
-    super(img1, img2, direction);
+  Mosaic2(PImage img1, PImage img2, int direction, State nextState) {
+    super(img1, img2, direction, nextState);
     zoomCounter = 1;
   }
   
@@ -461,9 +461,8 @@ class Mosaic2 extends Transition implements State {
     
     popMatrix();
 
-    return angle < HALF_PI ? this : 
-      ++g_Direction % 4 != 0 ?
-        new Mosaic2(next, prev, g_Direction % 4) : new Mosaic(next, prev, g_Direction % 4);
+    
+    return angle < HALF_PI ? this : nextState;
     
   }
 }
@@ -550,7 +549,7 @@ class LogoDisplay implements State {
   private float  cameraAngle;
 
   private int _counter;
-  
+  private PImage blackImg;
   public LogoDisplay() {
     _counter = 0;
     
@@ -563,9 +562,14 @@ class LogoDisplay implements State {
       }
     }
     cameraAngle = 100;
+    
+    blackImg = loadImage("black.png");
   }
   
   State update() {
+    
+    if(blackImg.get(0,0) == 0) return;
+    
     final float FRAGMENT_WIDTH  = (float)width  / N;
     final float FRAGMENT_HEIGHT = (float)height / N;
     
@@ -626,7 +630,7 @@ class LogoDisplay implements State {
 
     if (_counter < 100 + 2 * N) return this;
     
-    return new OrigamiEffect();
+    return new Mosaic2(img, blackImg, 2, new SensuEffect());
   }
 }
 
@@ -1118,7 +1122,7 @@ class Seigaiha {
       rows.add(new Row(height + 0.25 * PATTERN_SIZE));
     }
     
-    if((++counter % (int)(5 * rows.get(0).getNumPatterns())) == 0) {
+    if((++counter % (int)(4 * rows.get(0).getNumPatterns())) == 0) {
       if(rows.size() < height / (0.25 * PATTERN_SIZE) + 1) {
         rows.add(new Row(height + (1 - rows.size()) * 0.25 * PATTERN_SIZE));
       } 
@@ -1155,7 +1159,7 @@ class Row {
   }
   
   Row update() {
-    if(counter++ % 7 == 0) {
+    if(counter++ % 4 == 0) {
       if (patterns.size() < getNumPatterns()) {
         patterns.add(new Pattern(patterns.size() * PATTERN_SIZE, y));
       }
@@ -1212,16 +1216,15 @@ class SensuEffect implements State {
   private int counter;
   private Seigaiha seigaiha;
   private PImage backgroundImg;
+  private PImage yagasuriImg;
   SensuEffect() {
     sensuArray = new Sensu[4];
     counter = 0;
     this.seigaiha = seigaiha;
     
-    // lines.clear();
-    lines.add("Sensu Effect");
-    seigaiha = new Seigaiha();
-    
+    seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
+    yagasuriImg   = loadImage("yagasuri.png");
   }
     
   State update() {   
@@ -1251,7 +1254,7 @@ class SensuEffect implements State {
     
     seigaiha = seigaiha.update();
     
-    return seigaiha.finished() ? new Mosaic2(backgroundImg, img, 0) : this;
+    return seigaiha.finished() ? new Mosaic2(backgroundImg, yagasuriImg, 3, new Boid()) : this;
   }
 }
 
