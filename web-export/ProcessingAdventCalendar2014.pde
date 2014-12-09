@@ -645,11 +645,12 @@ class OrigamiEffect implements State {
   int _zOffset;
   
   PImage _img;
+  PImage _bg;
   
   OrigamiEffect() {
     noStroke();  
     _img = loadImage("yagasuri.png");
-
+    _bg  = loadImage("arrowpattern.png");
     origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
@@ -657,13 +658,15 @@ class OrigamiEffect implements State {
 
   State update() {
     background(0);
-    if(_img.get(0, 0) == 0) return this;
+    if(_img.get(0, 0) == 0 || _bg.get(0, 0) == null) return this;
     
     float angle = 0.5 * radians(++_counter);
     
     camera();
     
     pushMatrix();
+  
+    drawBackground(_bg);
   
     translate(width/2, height/2, _numFolds < MAX_FOLDS-1 ? 0 : -pow(++_zOffset, 2));
     rotateZ(PI);
