@@ -2,36 +2,31 @@
 
 class OrigamiEffect implements State {
   Origami origami;
-  Seigaiha seigaiha;
   
   private final int MAX_FOLDS = 3;  // 最大折りたたみ回数
   private int _numFolds;            // 折りたたんだ回数
   
-  private Seigaiha _seigaiha;
-  
   int _counter;
   int _zOffset;
+  
+  PImage _img;
+  
   OrigamiEffect() {
     noStroke();  
-    origami = new Origami(100, 150, 0);
-    seigaiha = new Seigaiha();
+    _img = loadImage("yagasuri.png");
+
+    origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
   }
 
   State update() {
     background(0);
-    if(img.get(0, 0) == 0) return this;
+    if(_img.get(0, 0) == 0) return this;
     
     float angle = 0.5 * radians(++_counter);
     
     camera();
-    
-    pushMatrix();
-    fill(0);
-    seigaiha = seigaiha.update();
-    fill(0xFF);
-    popMatrix();
     
     pushMatrix();
   
@@ -51,8 +46,6 @@ class OrigamiEffect implements State {
     
     origami = tmp;
     popMatrix();
-    
-
 
     return _numFolds < MAX_FOLDS ? this : new SensuEffect();
   }
@@ -78,12 +71,16 @@ class Origami {
   private int   _count;
   private int   _direction;
   
+  private PImage _img; 
+  
   private TextureCoords _entireTexCoords;
   private TextureCoords _innerTexCoords1;
   private TextureCoords _innerTexCoords2;
   private TextureCoords _outerTexCoords;
   
-  Origami(float w, float h, int dir) {
+  Origami(float w, float h, int dir, PImage img) {
+    _img = img;
+    
     // サイズを設定
     _width  = w;
     _height = h;
@@ -104,9 +101,9 @@ class Origami {
   // テクスチャ座標保持オブジェクトをセットアップ
   private void initEntireTexCoords() {
     _entireTexCoords.uvCoords[0] = new PVector(0, 0);
-    _entireTexCoords.uvCoords[1] = new PVector(0, img.height);
-    _entireTexCoords.uvCoords[2] = new PVector(img.width, img.height);
-    _entireTexCoords.uvCoords[3] = new PVector(img.width, 0);
+    _entireTexCoords.uvCoords[1] = new PVector(0, _img.height);
+    _entireTexCoords.uvCoords[2] = new PVector(_img.width, _img.height);
+    _entireTexCoords.uvCoords[3] = new PVector(_img.width, 0);
   }
   
   // 更新
@@ -168,7 +165,7 @@ class Origami {
       // テクスチャを内と外で描き分ける
       for(int j : new int[] {0, 1}) {
         beginShape();
-        texture(img);
+        texture(_img);
         TextureCoords _coords = j > 0 ? _outerTexCoords : i % 2 == 0 ? _innerTexCoords1 : _innerTexCoords2;
         vertex(-_width, 0.2 * j, -_height, _coords.uvCoords[0].x, _coords.uvCoords[0].y);
         vertex(-_width, 0.2 * j,  _height, _coords.uvCoords[1].x, _coords.uvCoords[1].y);
@@ -189,7 +186,7 @@ class Origami {
     float newWidth  = _direction % 2 == 0 ? _width : _width * 0.5;
     float newHeight = _direction % 2 == 0 ? _height * 0.5: _height;
     
-    return new Origami(newWidth, newHeight, ++_direction % 4);
+    return new Origami(newWidth, newHeight, ++_direction % 4, _img);
   }
   
   // テクスチャのUV座標を求める

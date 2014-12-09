@@ -24,7 +24,7 @@ class LogoDisplay implements State {
   
   State update() {
     
-    if(blackImg.get(0,0) == 0) return;
+    if(blackImg.get(0,0) == 0) return this;
     
     final float FRAGMENT_WIDTH  = (float)width  / N;
     final float FRAGMENT_HEIGHT = (float)height / N;

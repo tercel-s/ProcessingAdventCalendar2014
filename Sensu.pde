@@ -17,8 +17,6 @@ class SensuEffect implements State {
   State update() {   
     if(backgroundImg.get(0, 0) == 0) return;
     
-    // background((20 * counter) < 0xFF ? 0xFF - (20 * counter) : 0);
-    
     pushMatrix();
     translate(0, 0, (20 * counter) < 0xFF ? 0xFF - (20 * counter) : 0);
     
@@ -41,7 +39,7 @@ class SensuEffect implements State {
     
     seigaiha = seigaiha.update();
     
-    return seigaiha.finished() ? new Mosaic2(backgroundImg, yagasuriImg, 3, new Boid()) : this;
+    return seigaiha.finished() ? new Mosaic(backgroundImg, yagasuriImg, 3, new OrigamiEffect()) : this;
   }
 }
 
@@ -72,7 +70,7 @@ class Sensu implements State {
     
     pushMatrix();
     noFill();
-    translate(rSeed % 2 == 0 ? -0.25 * width : 0.25 * width, ++counter * 2, 0);    
+    translate(rSeed % 2 == 0 ? -0.25 * width : 0.25 * width, ++counter * 3, 0);    
     translate(0, 0, -100);
     
     translate(0.5 * width, 0.5*LEN, 0);
