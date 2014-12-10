@@ -636,7 +636,7 @@ class LogoDisplay implements State {
 
 
 class OrigamiEffect implements State {
-  Origami origami;
+  Origami _origami;
   
   private final int MAX_FOLDS = 3;  // 最大折りたたみ回数
   private int _numFolds;            // 折りたたんだ回数
@@ -650,8 +650,8 @@ class OrigamiEffect implements State {
   OrigamiEffect() {
     noStroke();  
     _img = loadImage("yagasuri.png");
-    _bg  = loadImage("arrowpattern.png");
-    origami = new Origami(100, 150, 0, _img);
+    _bg  = loadImage("wood.png");
+    _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
   }
@@ -676,13 +676,13 @@ class OrigamiEffect implements State {
     
     // 折りたたむアニメーションを行いつつ
     // ちゃっかり折りたたんだ回数も数える
-    Origami tmp = origami.update();
-    if(origami != tmp && ++_numFolds == 1) {
+    Origami tmp = _origami.update();
+    if(_origami != tmp && ++_numFolds == 1) {
       lines.clear();
       lines.add("Origami Effect");
     }
     
-    origami = tmp;
+    _origami = tmp;
     popMatrix();
 
     return _numFolds < MAX_FOLDS ? this : new SensuEffect();
