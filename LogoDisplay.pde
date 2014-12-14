@@ -20,7 +20,7 @@ class LogoDisplay implements State {
     }
     cameraAngle = 100;
     
-    blackImg = loadImage("black.png");
+    blackImg = g_black;
   }
   
   State update() {

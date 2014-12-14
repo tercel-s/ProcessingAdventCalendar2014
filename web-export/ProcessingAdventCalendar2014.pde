@@ -3,6 +3,7 @@ PImage g_shoji;
 PImage g_moon;
 PImage g_paper;
 PImage g_hau;
+PImage g_black;
 
 TypeWriter typeWriter;
 
@@ -17,6 +18,7 @@ void setup() {
   g_moon = loadImage("moon.png");
   g_paper = loadImage("paper.png");
   g_hau = loadImage("hau.png");
+  g_black = loadImage("black.png");
   state = new Idle();
 }
 
@@ -26,7 +28,8 @@ void draw() {
      g_shoji.get(0, 0)   == 0 ||
      g_moon.get(0, 0)    == 0 ||
      g_paper.get(0, 0)   == 0 ||
-     g_hau.get(0, 0)     == 0) return;
+     g_hau.get(0, 0)     == 0 ||
+     g_black.get(0, 0)   == 0) return;
 
   state = state.update();
   typeWriter = typeWriter.update();
@@ -581,7 +584,7 @@ class LogoDisplay implements State {
     }
     cameraAngle = 100;
     
-    blackImg = loadImage("black.png");
+    blackImg = g_black;
   }
   
   State update() {
