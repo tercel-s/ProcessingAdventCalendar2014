@@ -54,7 +54,7 @@ class LogoDisplay implements State {
     rotateX(radians(random(-MAX_CAMERA_ANGULAR_RATE, MAX_CAMERA_ANGULAR_RATE) * cameraAngle)); // ② x軸まわりに回転
     translate(-0.5 * width, -0.5 * height, 0);                                                 // ① 投影面中心を原点(0, 0, 0)に合わせる
     // ------------------------------------------------------------
-    
+    PImage img = g_WallImg;
     for(int i = 0; i < N ; ++i) {
       for(int j = 0; j < N ; ++j) {
         pushMatrix();

@@ -6,6 +6,7 @@ class Shoji {
   private final float FRAME_WIDTH = 6;
   private long counter;  
   private boolean opening;
+  private PImage img, frameImage;
   
   public boolean finished() {
     return !(counter < 0.5 * width);
@@ -27,7 +28,7 @@ class Shoji {
   }
   
   Shoji update() {
-    if(img.get(0, 0) == 0 || frameImage.get(0, 0) == 0) return;
+    if(img.get(0, 0) == 0 || frameImage.get(0, 0) == 0) return this;
     
     float ratio = pow(min(2.0 * (float)counter / width, 1.0), 2);
     ratio = opening ? ratio : 1.0 - ratio;

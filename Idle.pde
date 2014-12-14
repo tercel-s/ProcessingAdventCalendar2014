@@ -1,7 +1,7 @@
 class Idle implements State {
   Shoji _shoji;
   Idle() {
-    _shoji = new Shoji(loadImage("shoji.png"), false);
+    _shoji = new Shoji(g_shoji, false);
   }
   
   State update() {

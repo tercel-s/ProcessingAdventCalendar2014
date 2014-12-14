@@ -1,4 +1,5 @@
-PImage  img;
+PImage  g_WallImg;
+PImage g_shoji;
 TypeWriter typeWriter;
 
 State state;
@@ -7,13 +8,13 @@ void setup() {
   frameRate(20);
   
   typeWriter = new Typer();
-  img = loadImage("bg.png");  
+  g_WallImg = loadImage("bg.png");
+  g_shoji = loadImage("shoji.png");
   state = new Idle();
-  g_Counter = 0;
 }
 
 void draw() {
-  if(img.get(0, 0) == 0) return;
+  if(g_WallImg.get(0, 0) == 0 || g_shoji.get(0, 0) == 0) return;
 
   background(0);
 

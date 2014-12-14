@@ -1,4 +1,5 @@
-PImage  img;
+PImage  g_WallImg;
+PImage g_shoji;
 TypeWriter typeWriter;
 
 State state;
@@ -7,13 +8,13 @@ void setup() {
   frameRate(20);
   
   typeWriter = new Typer();
-  img = loadImage("bg.png");  
+  g_WallImg = loadImage("bg.png");
+  g_shoji = loadImage("shoji.png");
   state = new Idle();
-  g_Counter = 0;
 }
 
 void draw() {
-  if(img.get(0, 0) == 0) return;
+  if(g_WallImg.get(0, 0) == 0 || g_shoji.get(0, 0) == 0) return;
 
   background(0);
 
@@ -322,11 +323,11 @@ void drawCraft(RigidBody2D craft, int clr) {
   translate(-craft.position.x, -craft.position.y, 0);
   
   beginShape();
-  texture(img);
+  texture(g_WallImg);
   vertex(vList[0].x, vList[0].y, 0, 0, 0);
-  vertex(vList[1].x, vList[1].y, 0, 0, img.height);
-  vertex(vList[2].x, vList[2].y, 0, img.width, img.height);
-  vertex(vList[3].x, vList[3].y, 0, img.width, 0);
+  vertex(vList[1].x, vList[1].y, 0, 0, g_WallImg.height);
+  vertex(vList[2].x, vList[2].y, 0, g_WallImg.width, g_WallImg.height);
+  vertex(vList[3].x, vList[3].y, 0, g_WallImg.width, 0);
   endShape();
   
   popMatrix();
@@ -351,7 +352,7 @@ class Boid implements State {
   Boid() {
     _counter = 0;
     _bg = loadImage("moon.png");
-    _shoji = new Shoji(loadImage("shoji.png"), true);
+    _shoji = new Shoji(g_shoji, true);
     setupTypeWriter();
     initialize();
     
@@ -381,7 +382,7 @@ class Boid implements State {
 class Idle implements State {
   Shoji _shoji;
   Idle() {
-    _shoji = new Shoji(loadImage("shoji.png"), false);
+    _shoji = new Shoji(g_shoji, false);
   }
   
   State update() {
@@ -604,7 +605,7 @@ class LogoDisplay implements State {
     rotateX(radians(random(-MAX_CAMERA_ANGULAR_RATE, MAX_CAMERA_ANGULAR_RATE) * cameraAngle)); // ② x軸まわりに回転
     translate(-0.5 * width, -0.5 * height, 0);                                                 // ① 投影面中心を原点(0, 0, 0)に合わせる
     // ------------------------------------------------------------
-    
+    PImage img = g_WallImg;
     for(int i = 0; i < N ; ++i) {
       for(int j = 0; j < N ; ++j) {
         pushMatrix();
@@ -664,7 +665,7 @@ class OrigamiEffect implements State {
     _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
-    _shoji = new Shoji(loadImage("shoji.png"), false);
+    _shoji = new Shoji(g_shoji, false);
   }
 
   State update() {
@@ -1242,7 +1243,7 @@ class SensuEffect implements State {
   }
     
   State update() {   
-    if(backgroundImg.get(0, 0) == 0) return;
+    if(backgroundImg.get(0, 0) == 0) return this;
     
     pushMatrix();
     translate(0, 0, (20 * counter) < 0xFF ? 0xFF - (20 * counter) : 0);
@@ -1375,6 +1376,7 @@ class Shoji {
   private final float FRAME_WIDTH = 6;
   private long counter;  
   private boolean opening;
+  private PImage img, frameImage;
   
   public boolean finished() {
     return !(counter < 0.5 * width);
@@ -1396,7 +1398,7 @@ class Shoji {
   }
   
   Shoji update() {
-    if(img.get(0, 0) == 0 || frameImage.get(0, 0) == 0) return;
+    if(img.get(0, 0) == 0 || frameImage.get(0, 0) == 0) return this;
     
     float ratio = pow(min(2.0 * (float)counter / width, 1.0), 2);
     ratio = opening ? ratio : 1.0 - ratio;

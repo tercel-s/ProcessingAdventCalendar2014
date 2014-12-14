@@ -15,7 +15,7 @@ class SensuEffect implements State {
   }
     
   State update() {   
-    if(backgroundImg.get(0, 0) == 0) return;
+    if(backgroundImg.get(0, 0) == 0) return this;
     
     pushMatrix();
     translate(0, 0, (20 * counter) < 0xFF ? 0xFF - (20 * counter) : 0);

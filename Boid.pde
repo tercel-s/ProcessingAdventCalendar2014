@@ -10,7 +10,7 @@ class Boid implements State {
   Boid() {
     _counter = 0;
     _bg = loadImage("moon.png");
-    _shoji = new Shoji(loadImage("shoji.png"), true);
+    _shoji = new Shoji(g_shoji, true);
     setupTypeWriter();
     initialize();
     

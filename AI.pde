@@ -299,11 +299,11 @@ void drawCraft(RigidBody2D craft, int clr) {
   translate(-craft.position.x, -craft.position.y, 0);
   
   beginShape();
-  texture(img);
+  texture(g_WallImg);
   vertex(vList[0].x, vList[0].y, 0, 0, 0);
-  vertex(vList[1].x, vList[1].y, 0, 0, img.height);
-  vertex(vList[2].x, vList[2].y, 0, img.width, img.height);
-  vertex(vList[3].x, vList[3].y, 0, img.width, 0);
+  vertex(vList[1].x, vList[1].y, 0, 0, g_WallImg.height);
+  vertex(vList[2].x, vList[2].y, 0, g_WallImg.width, g_WallImg.height);
+  vertex(vList[3].x, vList[3].y, 0, g_WallImg.width, 0);
   endShape();
   
   popMatrix();
