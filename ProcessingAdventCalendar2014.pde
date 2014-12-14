@@ -2,6 +2,7 @@ PImage g_WallImg;
 PImage g_shoji;
 PImage g_moon;
 PImage g_paper;
+PImage g_hau;
 
 TypeWriter typeWriter;
 
@@ -15,6 +16,7 @@ void setup() {
   g_shoji = loadImage("shoji.png");
   g_moon = loadImage("moon.png");
   g_paper = loadImage("paper.png");
+  g_hau = loadImage("hau.png");
   state = new Idle();
 }
 
@@ -23,7 +25,8 @@ void draw() {
   if(g_WallImg.get(0, 0) == 0 || 
      g_shoji.get(0, 0)   == 0 ||
      g_moon.get(0, 0)    == 0 ||
-     g_paper.get(0, 0)   == 0) return;
+     g_paper.get(0, 0)   == 0 ||
+     g_hau.get(0, 0)     == 0) return;
 
   state = state.update();
   typeWriter = typeWriter.update();
@@ -1290,7 +1293,7 @@ class Sensu implements State {
   int counter, subCounter;
   int rSeed;
   Sensu(int seed) {
-    textureImage = loadImage("hau.png");
+    textureImage = g_hau;
     counter = 0;
     subCounter = 0;
     
