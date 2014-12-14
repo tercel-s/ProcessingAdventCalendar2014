@@ -9,7 +9,7 @@ class Boid implements State {
   private PImage _bg;
   Boid() {
     _counter = 0;
-    _bg = loadImage("moon.png");
+    _bg = g_moon;
     _shoji = new Shoji(g_shoji, true);
     setupTypeWriter();
     initialize();

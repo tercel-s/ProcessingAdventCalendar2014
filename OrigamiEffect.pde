@@ -16,7 +16,7 @@ class OrigamiEffect implements State {
   OrigamiEffect() {
     noStroke();  
     _img = loadImage("paper.png");
-    _bg  = loadImage("moon.png");
+    _bg  = g_moon;
     _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
