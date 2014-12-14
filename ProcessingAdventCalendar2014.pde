@@ -19,12 +19,11 @@ void setup() {
 }
 
 void draw() {
+  background(0);
   if(g_WallImg.get(0, 0) == 0 || 
      g_shoji.get(0, 0)   == 0 ||
      g_moon.get(0, 0)    == 0 ||
      g_paper.get(0, 0)   == 0) return;
-
-  background(0);
 
   state = state.update();
   typeWriter = typeWriter.update();
