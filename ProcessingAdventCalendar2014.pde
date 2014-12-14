@@ -1,5 +1,8 @@
-PImage  g_WallImg;
+PImage g_WallImg;
 PImage g_shoji;
+PImage g_moon;
+PImage g_paper;
+
 TypeWriter typeWriter;
 
 State state;
@@ -10,11 +13,16 @@ void setup() {
   typeWriter = new Typer();
   g_WallImg = loadImage("bg.png");
   g_shoji = loadImage("shoji.png");
+  g_moon = loadImage("moon.png");
+  g_paper = loadImage("paper.png");
   state = new Idle();
 }
 
 void draw() {
-  if(g_WallImg.get(0, 0) == 0 || g_shoji.get(0, 0) == 0) return;
+  if(g_WallImg.get(0, 0) == 0 || 
+     g_shoji.get(0, 0)   == 0 ||
+     g_moon.get(0, 0)    == 0 ||
+     g_paper.get(0, 0)   == 0) return;
 
   background(0);
 
@@ -351,7 +359,7 @@ class Boid implements State {
   private PImage _bg;
   Boid() {
     _counter = 0;
-    _bg = loadImage("moon.png");
+    _bg = g_moon;
     _shoji = new Shoji(g_shoji, true);
     setupTypeWriter();
     initialize();
@@ -660,8 +668,8 @@ class OrigamiEffect implements State {
   
   OrigamiEffect() {
     noStroke();  
-    _img = loadImage("paper.png");
-    _bg  = loadImage("moon.png");
+    _img = g_paper;
+    _bg  = g_moon;
     _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
@@ -1239,7 +1247,7 @@ class SensuEffect implements State {
     
     seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
-    paperImg   = loadImage("paper.png");
+    paperImg   = g_paper;
   }
     
   State update() {   
