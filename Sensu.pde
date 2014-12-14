@@ -55,7 +55,7 @@ class Sensu implements State {
   int counter, subCounter;
   int rSeed;
   Sensu(int seed) {
-    textureImage = loadImage("hau.png");
+    textureImage = g_hau;
     counter = 0;
     subCounter = 0;
     
