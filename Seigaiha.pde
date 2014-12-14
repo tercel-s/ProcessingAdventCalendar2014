@@ -88,7 +88,7 @@ class Row {
 class Pattern {
   private long counter;
   private float x, y;
-  private final float SPEED = 10.0;
+  private final float SPEED = 20.0;
   private boolean finished;
   
   Pattern(float x, float y) {

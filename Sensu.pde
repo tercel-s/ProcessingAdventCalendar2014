@@ -3,7 +3,7 @@ class SensuEffect implements State {
   private int counter;
   private Seigaiha seigaiha;
   private PImage backgroundImg;
-  private PImage yagasuriImg;
+  private PImage paperImg;
   SensuEffect() {
     sensuArray = new Sensu[4];
     counter = 0;
@@ -11,7 +11,7 @@ class SensuEffect implements State {
     
     seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
-    yagasuriImg   = loadImage("yagasuri.png");
+    paperImg   = loadImage("paper.png");
   }
     
   State update() {   
@@ -39,7 +39,7 @@ class SensuEffect implements State {
     
     seigaiha = seigaiha.update();
     
-    return seigaiha.finished() ? new Mosaic(backgroundImg, yagasuriImg, 3, new OrigamiEffect()) : this;
+    return seigaiha.finished() ? new Mosaic2(backgroundImg, paperImg, 2, new OrigamiEffect()) : this;
   }
 }
 

@@ -7,10 +7,9 @@ void setup() {
   frameRate(20);
   
   typeWriter = new Typer();
-  setupTypeWriter();
-  
   img = loadImage("bg.png");  
-  state = new Boid();
+  state = new Idle();
+  g_Counter = 0;
 }
 
 void draw() {
@@ -20,18 +19,7 @@ void draw() {
 
   state = state.update();
   typeWriter = typeWriter.update();
-  /*
-  pushMatrix();
-  camera(500, 500, 500, 0, 0, 0, 0, -1, 0);
-  rotateY(radians(frameCount));
   
-  fill(255);
-  noStroke();
-  origami = origami.update();
-  
-  typeWriter = typeWriter.update();
-  popMatrix();
-  */
 }
 /* Flocking */
 
@@ -358,19 +346,48 @@ boolean narrowView  = false;  //     : 狭い
 boolean chase       = false;  // 追跡モード
 class Boid implements State {
   private int _counter;
+  private Shoji _shoji;
+  private PImage _bg;
   Boid() {
     _counter = 0;
-    
+    _bg = loadImage("moon.png");
+    _shoji = new Shoji(loadImage("shoji.png"), true);
+    setupTypeWriter();
     initialize();
+    
     wideView = true;
   }
   
   State update() {
+    if(_bg.get(0, 0) == 0) return this;
+    
+    pushMatrix();
+    translate(1.5 * _counter, 0, 2.5 * _counter);
+    drawBackground(_bg);
+    popMatrix();
+    
+    pushMatrix();
+    translate(0, 0, -20);
     updateSimulation();
+    popMatrix();
+    
+    _shoji = _shoji.update();
     
     if(++_counter < 220) return this;
     
     return new LogoDisplay();
+  }
+}
+class Idle implements State {
+  Shoji _shoji;
+  Idle() {
+    _shoji = new Shoji(loadImage("shoji.png"), false);
+  }
+  
+  State update() {
+    _shoji.render();
+    if(!mousePressed) return this;
+    return new Boid();
   }
 }
 /* 画面遷移のエフェクト */
@@ -439,31 +456,20 @@ class Mosaic2 extends Transition implements State {
     pushMatrix();
     
     drawBackground(next);
-    
     float angle = radians(ROTATE_SPEED * pow(++counter, 2));
-    
     float angleSign = (direction == DIRECTION_LEFT || direction == DIRECTION_DOWN) ? -1: 1;
-
     translate(0, 0, SPEED * pow(++zoomCounter, 2));
     translate(0.5 * width, 0.5*height, -500);
-    
 
     if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT) {
       rotateY(angleSign * angle);      
     } else if(direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
       rotateX(angleSign * angle);
     }
-    
-
     translate(-0.5 * width, -0.5*height, 500);
-
-    drawDividedImage(prev, 20, 20);
-    
+    drawDividedImage(prev, 25, 20);
     popMatrix();
-
-    
     return angle < HALF_PI ? this : nextState;
-    
   }
 }
 
@@ -479,7 +485,7 @@ void drawDividedImage(PImage image,
   float horizontalSize = (float)width  / numHorizontalFractions;
 
   noStroke();
-  for(int i = 0; i < numVerticalFractions; ++i) {
+  for(int i = 0; i < numHorizontalFractions; ++i) {
     for(int j = 0; j < numVerticalFractions; ++j) {
       float x = i * horizontalSize;
       float y = j * verticalSize;
@@ -550,6 +556,7 @@ class LogoDisplay implements State {
 
   private int _counter;
   private PImage blackImg;
+  private PImage _bg;
   public LogoDisplay() {
     _counter = 0;
     
@@ -569,6 +576,8 @@ class LogoDisplay implements State {
   State update() {
     
     if(blackImg.get(0,0) == 0) return this;
+    
+
     
     final float FRAGMENT_WIDTH  = (float)width  / N;
     final float FRAGMENT_HEIGHT = (float)height / N;
@@ -630,7 +639,7 @@ class LogoDisplay implements State {
 
     if (_counter < 100 + 2 * N) return this;
     
-    return new Mosaic2(img, blackImg, 2, new SensuEffect());
+    return new Mosaic2(img, blackImg, 1, new SensuEffect());
   }
 }
 
@@ -646,27 +655,32 @@ class OrigamiEffect implements State {
   
   PImage _img;
   PImage _bg;
+  Shoji _shoji;
   
   OrigamiEffect() {
     noStroke();  
-    _img = loadImage("yagasuri.png");
-    _bg  = loadImage("wood.png");
+    _img = loadImage("paper.png");
+    _bg  = loadImage("moon.png");
     _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
+    _shoji = new Shoji(loadImage("shoji.png"), false);
   }
 
   State update() {
     background(0);
-    if(_img.get(0, 0) == 0 || _bg.get(0, 0) == null) return this;
+    if(_img.get(0, 0) == 0 || _bg.get(0, 0) == 0) return this;
     
     float angle = 0.5 * radians(++_counter);
     
     camera();
     
     pushMatrix();
-  
+    translate(0, 0, 2.5 * _counter);
     drawBackground(_bg);
+    popMatrix();
+    
+    pushMatrix();
   
     translate(width/2, height/2, _numFolds < MAX_FOLDS-1 ? 0 : -pow(++_zOffset, 2));
     rotateZ(PI);
@@ -677,15 +691,15 @@ class OrigamiEffect implements State {
     // 折りたたむアニメーションを行いつつ
     // ちゃっかり折りたたんだ回数も数える
     Origami tmp = _origami.update();
-    if(_origami != tmp && ++_numFolds == 1) {
-      lines.clear();
-      lines.add("Origami Effect");
-    }
-    
+    if(_origami != tmp) ++_numFolds;
     _origami = tmp;
     popMatrix();
-
-    return _numFolds < MAX_FOLDS ? this : new SensuEffect();
+    
+    if(_numFolds > 1) {
+      _shoji = _shoji.update();
+    }
+    
+    return _numFolds < MAX_FOLDS ? this : new Idle();
   }
 }
 
@@ -1174,7 +1188,7 @@ class Row {
 class Pattern {
   private long counter;
   private float x, y;
-  private final float SPEED = 10.0;
+  private final float SPEED = 20.0;
   private boolean finished;
   
   Pattern(float x, float y) {
@@ -1216,7 +1230,7 @@ class SensuEffect implements State {
   private int counter;
   private Seigaiha seigaiha;
   private PImage backgroundImg;
-  private PImage yagasuriImg;
+  private PImage paperImg;
   SensuEffect() {
     sensuArray = new Sensu[4];
     counter = 0;
@@ -1224,7 +1238,7 @@ class SensuEffect implements State {
     
     seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
-    yagasuriImg   = loadImage("yagasuri.png");
+    paperImg   = loadImage("paper.png");
   }
     
   State update() {   
@@ -1252,7 +1266,7 @@ class SensuEffect implements State {
     
     seigaiha = seigaiha.update();
     
-    return seigaiha.finished() ? new Mosaic(backgroundImg, yagasuriImg, 3, new OrigamiEffect()) : this;
+    return seigaiha.finished() ? new Mosaic2(backgroundImg, paperImg, 2, new OrigamiEffect()) : this;
   }
 }
 
@@ -1350,6 +1364,108 @@ class Sensu implements State {
     popMatrix(); 
     
     popMatrix();
+    return this;
+  }
+}
+
+
+
+
+class Shoji {
+  private final float FRAME_WIDTH = 6;
+  private long counter;  
+  private boolean opening;
+  
+  public boolean finished() {
+    return !(counter < 0.5 * width);
+  }
+  
+  Shoji(PImage _img, boolean opening) {
+    this.img     = _img;
+    this.opening = opening;
+    frameImage = loadImage("frame.png");
+    counter = 0;
+    noStroke();
+  }
+  
+  Shoji render() {
+    this.opening = true;
+    this.counter = 0;
+    
+    return this.update();
+  }
+  
+  Shoji update() {
+    if(img.get(0, 0) == 0 || frameImage.get(0, 0) == 0) return;
+    
+    float ratio = pow(min(2.0 * (float)counter / width, 1.0), 2);
+    ratio = opening ? ratio : 1.0 - ratio;
+    
+    float x = ratio * (!opening ? (counter - 0.5 * width) : -counter);
+    pushMatrix();
+    translate(x, 0, 0);
+    
+    beginShape();
+    texture(this.img);
+    vertex(0, 0, 0, 0, 0);
+    vertex(0, height, 0, 0, this.img.height);
+    vertex(0.5 * width, height, 0, 0.5 * this.img.width, this.img.height);
+    vertex(0.5 * width, 0 , 0, 0.5 * this.img.width, 0);
+    endShape();
+    
+    for(float i = 0.5*(width - FRAME_WIDTH); !(i < 0); i -= 50) {
+      beginShape();
+      texture(frameImage);
+      vertex(i - 0.5 * FRAME_WIDTH,      0, 1, i - 0.5 * FRAME_WIDTH,                 0);
+      vertex(i - 0.5 * FRAME_WIDTH, height, 1, i - 0.5 * FRAME_WIDTH, frameImage.height);
+      vertex(i + 0.5 * FRAME_WIDTH, height, 1, i + 0.5 * FRAME_WIDTH, frameImage.height);
+      vertex(i + 0.5 * FRAME_WIDTH,      0, 1, i + 0.5 * FRAME_WIDTH,                 0);
+      endShape();
+    }
+  
+    for(int i = 0; (i < height); i += 60) {
+      beginShape();
+      texture(frameImage);
+      vertex(          0, i - 0.5 * FRAME_WIDTH, 1,                0, i - 0.5 * FRAME_WIDTH);
+      vertex(          0, i + 0.5 * FRAME_WIDTH, 1,                0, i + 0.5 * FRAME_WIDTH);
+      vertex(0.5 * width, i + 0.5 * FRAME_WIDTH, 1, frameImage.width, i + 0.5 * FRAME_WIDTH);
+      vertex(0.5 * width, i - 0.5 * FRAME_WIDTH, 1, frameImage.width, i - 0.5 * FRAME_WIDTH);
+      endShape();
+    }
+    popMatrix();
+    
+    x = -x;
+    pushMatrix();
+    translate(x, 0, 0);
+    beginShape();
+    texture(this.img);
+    vertex(0.5 * width, 0, 0, 0.5 * this.img.width, 0);
+    vertex(0.5 * width, height, 0, 0.5 * this.img.width, this.img.height);
+    vertex( width, height, 0, this.img.width, this.img.height);
+    vertex( width, 0 , 0, this.img.width, 0);
+    endShape();
+    
+    for(float i = width; !(i < 0.5 * width); i -= 50) {
+      beginShape();
+      texture(frameImage);
+      vertex(i - 0.5 * FRAME_WIDTH,      0, 1, i - 0.5 * FRAME_WIDTH,                 0);
+      vertex(i - 0.5 * FRAME_WIDTH, height, 1, i - 0.5 * FRAME_WIDTH, frameImage.height);
+      vertex(i + 0.5 * FRAME_WIDTH, height, 1, i + 0.5 * FRAME_WIDTH, frameImage.height);
+      vertex(i + 0.5 * FRAME_WIDTH,      0, 1, i + 0.5 * FRAME_WIDTH,                 0);
+      endShape();
+    }
+  
+    for(int i = 0; (i < height); i += 60) {
+      beginShape();
+      texture(frameImage);
+      vertex(0.5 * width, i - 0.5 * FRAME_WIDTH, 1,                0, i - 0.5 * FRAME_WIDTH);
+      vertex(0.5 * width, i + 0.5 * FRAME_WIDTH, 1,                0, i + 0.5 * FRAME_WIDTH);
+      vertex(      width, i + 0.5 * FRAME_WIDTH, 1, frameImage.width, i + 0.5 * FRAME_WIDTH);
+      vertex(      width, i - 0.5 * FRAME_WIDTH, 1, frameImage.width, i - 0.5 * FRAME_WIDTH);
+      endShape();
+    }
+    popMatrix();
+    counter += 10;
     return this;
   }
 }

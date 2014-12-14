@@ -11,27 +11,32 @@ class OrigamiEffect implements State {
   
   PImage _img;
   PImage _bg;
+  Shoji _shoji;
   
   OrigamiEffect() {
     noStroke();  
-    _img = loadImage("yagasuri.png");
-    _bg  = loadImage("wood.png");
+    _img = loadImage("paper.png");
+    _bg  = loadImage("moon.png");
     _origami = new Origami(100, 150, 0, _img);
     _numFolds = 0;
     _zOffset = 0;
+    _shoji = new Shoji(loadImage("shoji.png"), false);
   }
 
   State update() {
     background(0);
-    if(_img.get(0, 0) == 0 || _bg.get(0, 0) == null) return this;
+    if(_img.get(0, 0) == 0 || _bg.get(0, 0) == 0) return this;
     
     float angle = 0.5 * radians(++_counter);
     
     camera();
     
     pushMatrix();
-  
+    translate(0, 0, 2.5 * _counter);
     drawBackground(_bg);
+    popMatrix();
+    
+    pushMatrix();
   
     translate(width/2, height/2, _numFolds < MAX_FOLDS-1 ? 0 : -pow(++_zOffset, 2));
     rotateZ(PI);
@@ -42,15 +47,15 @@ class OrigamiEffect implements State {
     // 折りたたむアニメーションを行いつつ
     // ちゃっかり折りたたんだ回数も数える
     Origami tmp = _origami.update();
-    if(_origami != tmp && ++_numFolds == 1) {
-      lines.clear();
-      lines.add("Origami Effect");
-    }
-    
+    if(_origami != tmp) ++_numFolds;
     _origami = tmp;
     popMatrix();
-
-    return _numFolds < MAX_FOLDS ? this : new SensuEffect();
+    
+    if(_numFolds > 1) {
+      _shoji = _shoji.update();
+    }
+    
+    return _numFolds < MAX_FOLDS ? this : new Idle();
   }
 }
 

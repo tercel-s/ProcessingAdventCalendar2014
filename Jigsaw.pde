@@ -64,31 +64,20 @@ class Mosaic2 extends Transition implements State {
     pushMatrix();
     
     drawBackground(next);
-    
     float angle = radians(ROTATE_SPEED * pow(++counter, 2));
-    
     float angleSign = (direction == DIRECTION_LEFT || direction == DIRECTION_DOWN) ? -1: 1;
-
     translate(0, 0, SPEED * pow(++zoomCounter, 2));
     translate(0.5 * width, 0.5*height, -500);
-    
 
     if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT) {
       rotateY(angleSign * angle);      
     } else if(direction == DIRECTION_UP || direction == DIRECTION_DOWN) {
       rotateX(angleSign * angle);
     }
-    
-
     translate(-0.5 * width, -0.5*height, 500);
-
-    drawDividedImage(prev, 20, 20);
-    
+    drawDividedImage(prev, 25, 20);
     popMatrix();
-
-    
     return angle < HALF_PI ? this : nextState;
-    
   }
 }
 
@@ -104,7 +93,7 @@ void drawDividedImage(PImage image,
   float horizontalSize = (float)width  / numHorizontalFractions;
 
   noStroke();
-  for(int i = 0; i < numVerticalFractions; ++i) {
+  for(int i = 0; i < numHorizontalFractions; ++i) {
     for(int j = 0; j < numVerticalFractions; ++j) {
       float x = i * horizontalSize;
       float y = j * verticalSize;

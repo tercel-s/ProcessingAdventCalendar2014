@@ -6,6 +6,7 @@ class LogoDisplay implements State {
 
   private int _counter;
   private PImage blackImg;
+  private PImage _bg;
   public LogoDisplay() {
     _counter = 0;
     
@@ -25,6 +26,8 @@ class LogoDisplay implements State {
   State update() {
     
     if(blackImg.get(0,0) == 0) return this;
+    
+
     
     final float FRAGMENT_WIDTH  = (float)width  / N;
     final float FRAGMENT_HEIGHT = (float)height / N;
@@ -86,6 +89,6 @@ class LogoDisplay implements State {
 
     if (_counter < 100 + 2 * N) return this;
     
-    return new Mosaic2(img, blackImg, 2, new SensuEffect());
+    return new Mosaic2(img, blackImg, 1, new SensuEffect());
   }
 }

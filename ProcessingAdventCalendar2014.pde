@@ -7,10 +7,9 @@ void setup() {
   frameRate(20);
   
   typeWriter = new Typer();
-  setupTypeWriter();
-  
   img = loadImage("bg.png");  
-  state = new Boid();
+  state = new Idle();
+  g_Counter = 0;
 }
 
 void draw() {
@@ -20,16 +19,5 @@ void draw() {
 
   state = state.update();
   typeWriter = typeWriter.update();
-  /*
-  pushMatrix();
-  camera(500, 500, 500, 0, 0, 0, 0, -1, 0);
-  rotateY(radians(frameCount));
   
-  fill(255);
-  noStroke();
-  origami = origami.update();
-  
-  typeWriter = typeWriter.update();
-  popMatrix();
-  */
 }
