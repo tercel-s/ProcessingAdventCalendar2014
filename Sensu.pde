@@ -11,7 +11,7 @@ class SensuEffect implements State {
     
     seigaiha = new Seigaiha();    
     backgroundImg = loadImage("seigaiha.png");
-    paperImg   = loadImage("paper.png");
+    paperImg   = g_paper;
   }
     
   State update() {   

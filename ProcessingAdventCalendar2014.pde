@@ -1,6 +1,8 @@
 PImage g_WallImg;
 PImage g_shoji;
 PImage g_moon;
+PImage g_paper;
+
 TypeWriter typeWriter;
 
 State state;
@@ -12,13 +14,15 @@ void setup() {
   g_WallImg = loadImage("bg.png");
   g_shoji = loadImage("shoji.png");
   g_moon = loadImage("moon.png");
+  g_paper = loadImage("paper.png");
   state = new Idle();
 }
 
 void draw() {
   if(g_WallImg.get(0, 0) == 0 || 
      g_shoji.get(0, 0)   == 0 ||
-     g_moon.get(0, 0)    == 0) return;
+     g_moon.get(0, 0)    == 0 ||
+     g_paper.get(0, 0)   == 0) return;
 
   background(0);
 
